@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Requester.js specs</title>
+		<link rel="stylesheet" type="text/css" href="../node_modules/mocha/mocha.css">
+	</head>
+	<body>
+		<div id="mocha"></div>
+
+		<script src="../lib/jquery/jquery.js"></script>
+		<script src="../lib/underscore/underscore.js"></script>
+		<script src="../source/requester.js"></script>
+		<script src="../node_modules/chai/chai.js"></script>
+		<script src="../node_modules/mocha/mocha.js"></script>
+		<script>mocha.setup("bdd");</script>
+		<script src="requester.spec.js"></script>
+		<script>
+			(function () {
+				mocha.run();
+			}());
+		</script>
+	</body>
+</html>
