@@ -26,10 +26,10 @@
                                 request[key] = self._executeOptions[key](value, self);
                             }
                         });
-                    });
 
-                    self._requests[requestName] = request;
-                    self.requests[requestName]["requestRefMap"] = { type: "_requests", name: requestName };
+                        self._requests[requestName] = request;
+                        self.requests[requestName]["requestRefMap"] = { type: "_requests", name: requestName };
+                    });
                 }
 
                 self._requestsInitialized = true;
