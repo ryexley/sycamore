@@ -8,7 +8,7 @@
 
 		var testRequester;
 		var TestRequester = function () {};
-		_.extend(TestRequester.prototype, {});
+		_.extend(TestRequester.prototype, Requester);
 
 		beforeEach(function () {
 			testRequester = new TestRequester();
