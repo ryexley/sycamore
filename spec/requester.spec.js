@@ -33,6 +33,7 @@
 
 		afterEach(function () {
 			rt = null;
+			localStorage.clear();
 		});
 
 		it("should be able to do basic math", function () {

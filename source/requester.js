@@ -14,6 +14,8 @@
 
         _requests: {},
 
+        _memoryCache: {},
+
         _setupRequests: function () {
             var self = this;
 
@@ -65,10 +67,36 @@
         },
         /* jshint unused:true */
 
-        _checkCache: function (cache) {
-            // if (cache.)
+        _isLocalStorageSupported: function () {
+            var test = "supported";
+            try {
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        },
 
-            return null;
+        _cacheData: function (cache, data) {
+            if (cache.store === "local" && this._isLocalStorageSupported()) {
+                var requestDataCache = JSON.parse(localStorage.getItem("requestDataCache"));
+                requestDataCache[cache.key] = data;
+                localStorage.setItem("requestDataCache", JSON.stringify(requestDataCache));
+            } else {
+                this._memoryCache[cache.key] = data;
+            }
+
+            cache.expires = this.dates.addMinutes(Date.now(), cache.expiresAfter);
+        },
+
+        _getCachedData: function (cache) {
+            if (cache.store === "local" && this._isLocalStorageSupported()) {
+                var requestDataCache = JSON.parse(localStorage.getItem("requestDataCache"));
+                return requestDataCache[cache.key];
+            } else {
+                return this._memoryCache[cache.key];
+            }
         },
 
         execute: function (params) {
@@ -76,9 +104,12 @@
             var data;
 
             if (params.cache) {
-                var cached = self._checkCache(params.cache);
-                if (cached) {
-                    return cached;
+                var expired = (params.cache.expires && this.dates.compare(Date.now(), params.cache.expires) > 0);
+                if (!expired) {
+                    var cached = self._getCachedData(params.cache);
+                    if (cached) {
+                        return cached;
+                    }
                 }
             }
 
@@ -100,6 +131,12 @@
                 data: data || {},
                 contentType: params.contentType || "application/json; charset=utf-8",
                 context: params.context || self
+            });
+
+            request.done(function (data) {
+                if (params.cache) {
+                    self._cacheData(params.cache, data);
+                }
             });
 
             if (params.done) {
@@ -124,8 +161,8 @@
 
         // http://stackoverflow.com/questions/497790
         dates: {
-            convert: function (d) {
-                // Converts the date in d to a date-object. The input can be:
+            convert: function (date) {
+                // Converts the date in `date` to a date-object. The input can be:
                 //   a date object: returned without modification
                 //  an array      : Interpreted as [year,month,day]. NOTE: month is 0-11.
                 //   a number     : Interpreted as number of milliseconds
@@ -135,11 +172,11 @@
                 //  an object     : Interpreted as an object with year, month and date
                 //                  attributes.  **NOTE** month is 0-11.
                 return (
-                    d.constructor === Date ? d :
-                    d.constructor === Array ? new Date(d[0], d[1], d[2]) :
-                    d.constructor === Number ? new Date(d) :
-                    d.constructor === String ? new Date(d) :
-                    typeof d === "object" ? new Date(d.year, d.month, d.date) :
+                    date.constructor === Date ? date :
+                    date.constructor === Array ? new Date(date[0], date[1], date[2]) :
+                    date.constructor === Number ? new Date(date) :
+                    date.constructor === String ? new Date(date) :
+                    typeof date === "object" ? new Date(date.year, date.month, date.date) :
                     NaN
                 );
             },
@@ -160,20 +197,29 @@
                 );
             },
 
-            inRange: function (d, start, end) {
-                // Checks if date in d is between dates in start and end.
+            inRange: function (date, start, end) {
+                // Checks if date in `date` is between dates in start and end.
                 // Returns a boolean or NaN:
-                //    true  : if d is between start and end (inclusive)
-                //    false : if d is before start or after end
+                //    true  : if date is between start and end (inclusive)
+                //    false : if date is before start or after end
                 //    NaN   : if one or more of the dates is illegal.
                 // NOTE: The code inside isFinite does an assignment (=).
                return (
-                    isFinite(d = this.convert(d).valueOf()) &&
+                    isFinite(date = this.convert(date).valueOf()) &&
                     isFinite(start = this.convert(start).valueOf()) &&
                     isFinite(end = this.convert(end).valueOf()) ?
-                    start <= d && d <= end :
+                    start <= date && date <= end :
                     NaN
                 );
+            },
+
+            addMinutes: function (date, minutes) {
+                if (isFinite(date = this.convert(date).valueOf())) {
+                    var target = this.convert(date);
+                    return this.convert(target.setMinutes(target.getMinutes() + minutes));
+                }
+
+                return false;
             }
         }
 
