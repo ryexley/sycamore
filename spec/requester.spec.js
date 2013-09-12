@@ -14,12 +14,21 @@
 				url: "http://example.com/request-1",
 				type: "post",
 				data: { foo: "request-1-foo", bar: "request-1-bar" },
-				done: "request1Done"
+				done: "request1Done",
+				fail: "request1Fail"
 			}
 		},
 
-		request1Done: function (data) {
+		requestOne: function () {
+			this.execute(this.requests.request1);
+		},
 
+		request1Done: function (data) {
+			console.log(data);
+		},
+
+		request1Fail: function (data) {
+			console.log(data);
 		}
 	});
 
@@ -32,12 +41,18 @@
 		});
 
 		afterEach(function () {
+			$.mockjaxClear();
 			rt = null;
 			localStorage.clear();
 		});
 
-		it("should be able to do basic math", function () {
-			expect(1).to.equal(1);
+		it("mocking ajax calls works", function () {
+			$.mockjax({
+				url: rt.requests.request1.url,
+				responseText: { foo: "bar", bar: "foo" }
+			});
+
+			rt.requestOne();
 		});
 
 	});

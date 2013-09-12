@@ -133,9 +133,9 @@
                 context: params.context || self
             });
 
-            request.done(function (data) {
+            request.done(function (response) {
                 if (params.cache) {
-                    self._cacheData(params.cache, data);
+                    self._cacheData(params.cache, response);
                 }
             });
 
