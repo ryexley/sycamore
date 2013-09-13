@@ -48,6 +48,14 @@
                 return target;
             },
 
+            contentType: function (target, context) {
+                return target;
+            },
+
+            context: function (target, context) {
+                return target;
+            },
+
             data: function (target, context) {
                 // return target;
                 if (context[target]) {
@@ -55,6 +63,10 @@
                 } else {
                     return target;
                 }
+            },
+
+            dataType: function (target, context) {
+                return target;
             },
 
             done: function (target, context) {
@@ -101,7 +113,7 @@
 
         execute: function (params) {
             var self = this;
-            var data;
+            var requestData;
 
             if (params.cache) {
                 var expired = (params.cache.expires && this.dates.compare(Date.now(), params.cache.expires) > 0);
@@ -120,15 +132,16 @@
             params = self[params.requestRefMap.type][params.requestRefMap.name];
 
             if (_.isFunction(params.data)) {
-                data = params.data.call(params.context || self);
+                requestData = params.data.call(params.context || self);
             } else {
-                data = params.data;
+                requestData = params.data;
             }
 
             var request = $.ajax({
                 url: params.url,
                 type: params.type || "get",
-                data: data || {},
+                data: requestData || {},
+                dataType: params.dataType || "json",
                 contentType: params.contentType || "application/json; charset=utf-8",
                 context: params.context || self
             });

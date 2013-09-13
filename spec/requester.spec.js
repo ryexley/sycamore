@@ -4,55 +4,69 @@
 	var should = chai.should;
 	var assert = chai.assert;
 
+	var ajaxStub;
+
 	var RequesterTester = function (options) {
 		this.options = options || {};
 	};
 
 	_.extend(RequesterTester.prototype, Requester, {
 		requests: {
-			request1: {
-				url: "http://example.com/request-1",
-				type: "post",
-				data: { foo: "request-1-foo", bar: "request-1-bar" },
-				done: "request1Done",
-				fail: "request1Fail"
+			getBranches: {
+				url: "http://sycamore.dev/branches",
+				done: "onGetBranchesDone",
+				fail: "onGetBranchesFail"
 			}
 		},
 
-		requestOne: function () {
-			this.execute(this.requests.request1);
+		getBranches: function () {
+			this.execute(this.requests.getBranches).resolve();
 		},
 
-		request1Done: function (data) {
-			console.log(data);
-		},
-
-		request1Fail: function (data) {
-			console.log(data);
-		}
+		onGetBranchesDone: sinon.spy(),
+		onGetBranchesFail: sinon.spy()
 	});
 
 	describe("Requester", function () {
 
-		var rt;
+		var requesterTester;
 
 		beforeEach(function () {
-			rt = new RequesterTester();
+			requesterTester = new RequesterTester();
+			ajaxStub = sinon.stub($, "ajax", function () {
+				return $.Deferred();
+			})
 		});
 
 		afterEach(function () {
 			$.mockjaxClear();
-			rt = null;
+			requesterTester = null;
+			ajaxStub.restore();
 			localStorage.clear();
 		});
 
-		it("mocking ajax calls works", function () {
-			$.mockjax({
-				url: rt.requests.request1.url,
-				responseText: { foo: "bar", bar: "foo" }
+		describe("instances", function () {
+
+		});
+
+		describe("execute function", function () {
+
+			it("should initialize requests on first call to `execute`", function () {
+				expect(requesterTester._requestsInitialized).to.be.false;
+				expect(requesterTester._requests).to.be.empty;
+
+				requesterTester.getBranches();
+
+				expect(requesterTester._requestsInitialized).to.be.true;
+				expect(requesterTester._requests).not.to.be.empty;
+				expect(requesterTester._requests.getBranches).to.exist;
 			});
 
-			rt.requestOne();
+			it("should be able to execute a pre-defined request", function () {
+				requesterTester.getBranches();
+				expect(requesterTester.onGetBranchesDone.called).to.be.true;
+			});
+
 		});
 
 	});
