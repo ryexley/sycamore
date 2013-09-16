@@ -152,6 +152,8 @@
                         contentType: params.contentType || "application/json; charset=utf-8",
                         context: params.context || self
                     });
+
+                    self._handleConfiguredCallbacks(params, request);
                 }, params.delayFor);
             } else {
                 request = $.ajax({
@@ -162,8 +164,12 @@
                     contentType: params.contentType || "application/json; charset=utf-8",
                     context: params.context || self
                 });
-            }
 
+                self._handleConfiguredCallbacks(params, request);
+            }
+        },
+
+        _handleConfiguredCallbacks: function (params, request) {
             request.done(function (response) {
                 if (params.cache) {
                     self._cacheData(params.cache, response);
@@ -181,8 +187,6 @@
             if (params.always) {
                 request.always(params.always.bind(params.context || self));
             }
-
-            return request;
         },
 
         // This is just an alias/wrapper for the execute function, in case you prefer this terminology
