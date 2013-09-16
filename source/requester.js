@@ -154,6 +154,8 @@
                     });
 
                     self._handleConfiguredCallbacks(params, request);
+
+                    return request;
                 }, params.delayFor);
             } else {
                 request = $.ajax({
@@ -166,6 +168,8 @@
                 });
 
                 self._handleConfiguredCallbacks(params, request);
+
+                return request;
             }
         },
 
