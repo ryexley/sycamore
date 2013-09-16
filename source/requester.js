@@ -143,6 +143,8 @@
             }
 
             if (params.delayFor) {
+                var deferred = $.Deferred();
+
                 setTimeout(function () {
                     request = $.ajax({
                         url: params.url,
@@ -151,12 +153,19 @@
                         dataType: params.dataType || "json",
                         contentType: params.contentType || "application/json; charset=utf-8",
                         context: params.context || self
+                    })
+                    .done(function () {
+                        deferred.resolve.apply(request, arguments);
+                    })
+                    .fail(function () {
+                        deferred.reject.apply(request, arguments);
                     });
 
                     self._handleConfiguredCallbacks(params, request);
 
-                    return request;
                 }, params.delayFor);
+
+                return deferred.promise();
             } else {
                 request = $.ajax({
                     url: params.url,
