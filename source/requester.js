@@ -113,6 +113,7 @@
 
         execute: function (params) {
             var self = this;
+            var requeset;
             var requestData;
 
             if (params.cache) {
@@ -137,14 +138,27 @@
                 requestData = params.data;
             }
 
-            var request = $.ajax({
-                url: params.url,
-                type: params.type || "get",
-                data: requestData || {},
-                dataType: params.dataType || "json",
-                contentType: params.contentType || "application/json; charset=utf-8",
-                context: params.context || self
-            });
+            if (params.delayFor) {
+                setTimeout(function () {
+                    request = $.ajax({
+                        url: params.url,
+                        type: params.type || "get",
+                        data: requestData || {},
+                        dataType: params.dataType || "json",
+                        contentType: params.contentType || "application/json; charset=utf-8",
+                        context: params.context || self
+                    });
+                }, params.delayFor);
+            } else {
+                request = $.ajax({
+                    url: params.url,
+                    type: params.type || "get",
+                    data: requestData || {},
+                    dataType: params.dataType || "json",
+                    contentType: params.contentType || "application/json; charset=utf-8",
+                    context: params.context || self
+                });
+            }
 
             request.done(function (response) {
                 if (params.cache) {
