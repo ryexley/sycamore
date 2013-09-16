@@ -75,6 +75,10 @@
 
             fail: function (target, context) {
                 return context[target];
+            },
+
+            delayFor: function (target, context) {
+                return target;
             }
         },
         /* jshint unused:true */
