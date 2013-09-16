@@ -1,10 +1,10 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(["$", "_"], factory);
+        define(["jquery", "underscore"], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require("$"), require("_"));
+        module.exports = factory(require("jquery"), require("underscore"));
     } else {
-        root.Requester = factory(root.$, root._);
+        root.Requester = factory(root.jquery, root.underscore);
     }
 }(this, function ($, _) {
 
