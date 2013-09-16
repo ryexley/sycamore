@@ -117,7 +117,7 @@
 
         execute: function (params) {
             var self = this;
-            var requeset;
+            var request;
             var requestData;
 
             if (params.cache) {
