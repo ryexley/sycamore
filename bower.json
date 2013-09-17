@@ -1,9 +1,20 @@
 {
-  "name": "Sycamore",
-  "version": "0.1.0",
-  "dependencies": {
-    "jquery": ">=1.10.2",
-    "underscore": "~1.5.2",
-    "jquery-mockjax": "~1.5.2"
-  }
+    "name": "sycamore",
+    "version": "0.1.1",
+    "description": "A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options",
+    "main": "dist/requester.js",
+    "dependencies": {
+        "jquery": ">=1.10.2",
+        "underscore": "~1.5.2"
+    },
+    "devDependencies": {
+        "jquery-mockjax": "~1.5.2"
+    },
+    "ignore": [
+        "source/*",
+        "lib/**/*",
+        "node_modules/**/*",
+        "spec/**/*",
+        "./*"
+    ]
 }
