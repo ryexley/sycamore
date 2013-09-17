@@ -4,7 +4,7 @@
     } else if (typeof exports === "object") {
         module.exports = factory(require("jquery"), require("underscore"));
     } else {
-        root.Requester = factory(root.jquery, root.underscore);
+        root.Requester = factory(root.$, root._);
     }
 }(this, function ($, _) {
 
