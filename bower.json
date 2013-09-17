@@ -1,7 +1,6 @@
 {
     "name": "sycamore",
-    "version": "0.1.1",
-    "description": "A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options",
+    "version": "0.1.2",
     "main": "dist/requester.js",
     "dependencies": {
         "jquery": ">=1.10.2",
@@ -15,6 +14,13 @@
         "lib/**/*",
         "node_modules/**/*",
         "spec/**/*",
-        "./*"
+        ".bowerrc",
+        ".gitignore",
+        ".jshintignore",
+        ".jshintrc",
+        "bower.json",
+        "gruntfile.js",
+        "package.json",
+        "README.md"
     ]
 }
