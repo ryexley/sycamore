@@ -2,13 +2,6 @@
     "name": "sycamore",
     "version": "0.1.2",
     "main": "dist/requester.js",
-    "dependencies": {
-        "jquery": ">=1.10.2",
-        "underscore": "~1.5.2"
-    },
-    "devDependencies": {
-        "jquery-mockjax": "~1.5.2"
-    },
     "ignore": [
         "source/*",
         "lib/**/*",
@@ -22,5 +15,12 @@
         "gruntfile.js",
         "package.json",
         "README.md"
-    ]
+    ],
+    "dependencies": {
+        "jquery": ">=1.10.2",
+        "underscore": "~1.5.2"
+    },
+    "devDependencies": {
+        "jquery-mockjax": "~1.5.2"
+    }
 }
