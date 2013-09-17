@@ -149,6 +149,8 @@
         },
 
         _execute: function (params, requestData) {
+            var self = this;
+
             var request = $.ajax({
                 url: params.url,
                 type: params.type || "get",
@@ -170,6 +172,7 @@
         },
 
         _executeDelayed: function (params, requestData) {
+            var self = this;
             var request;
             var delayProxy = $.Deferred();
 
