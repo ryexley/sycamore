@@ -1,6 +1,6 @@
-// Sycamore, v0.1.0 | (c) 2013 Bob Yexley
+// sycamore, v0.1.4 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-09-17 @ 11:53:09
+// Generated: 2013-09-17 @ 1:34:54
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -155,6 +155,8 @@
         },
 
         _execute: function (params, requestData) {
+            var self = this;
+
             var request = $.ajax({
                 url: params.url,
                 type: params.type || "get",
@@ -176,6 +178,7 @@
         },
 
         _executeDelayed: function (params, requestData) {
+            var self = this;
             var request;
             var delayProxy = $.Deferred();
 
