@@ -30,69 +30,69 @@
 
     var ajaxStub;
 
-    var RequesterTester = function(options) {
+    var FantasyFootball = function(options) {
         this.options = options || {};
     };
 
-    _.extend(RequesterTester.prototype, Requester, {
+    _.extend(FantasyFootball.prototype, Requester, {
         requests: {
-            getBranches: {
-                url: "http://example.com/branches",
-                done: "onGetBranchesDone",
-                fail: "onGetBranchesFail"
+            getLeagues: {
+                url: "http://example.com/leagues",
+                done: "onGetLeaguesDone",
+                fail: "onGetLeaguesFail"
             },
 
-            getBranch: {
-            	url: "http://example.com/branches/12345"
+            getTeam: {
+            	url: "http://example.com/teams/12345"
             },
 
-            getLeaf: {
-            	url: "http://example.com/leaves/12345",
+            getPlayer: {
+            	url: "http://example.com/players/12345",
             	data: {
-            		branchId: "12345"
+            		teamId: "12345"
             	},
-            	done: "onGetLeafDone"
+            	done: "onGetPlayerDone"
             },
 
-            getTwig: {
-            	url: "http://example.com/twigs/12345",
-            	data: "getTwigData",
-            	done: "onGetTwigDone"
+            getSchedule: {
+            	url: "http://example.com/leagues/12345/schedule",
+            	data: "getScheduleData",
+            	done: "onGetScheduleDone"
             },
 
-            getTrunk: {
-            	url: "http://example.com/tree/12345/trunk",
+            getAthlete: {
+            	url: "http://example.com/athlete/12345",
             	data: function () {
             		return {
-            			mountain: 23456,
-            			grove: 34567
+            			teamId: 23456,
+            			leagueId: 34567
             		};
             	},
-            	done: "onGetTrunkDone"
+            	done: "onGetAthleteDone"
             }
         },
 
-        getTwigData: function () {
+        getScheduleData: function () {
         	return {
-        		branchId: "12345",
-        		leaves: [1, 2, 3, 4, 5]
+        		leagueId: "12345",
+        		players: [1, 2, 3, 4, 5]
         	};
         },
 
-        onGetBranchesDone: sinon.spy(),
-        onGetBranchesFail: sinon.spy(),
-        onGetBranchDone: sinon.spy(),
-        onGetLeafDone: sinon.spy(),
-        onGetTwigDone: sinon.spy(),
-        onGetTrunkDone: sinon.spy()
+        onGetLeaguesDone: sinon.spy(),
+        onGetLeaguesFail: sinon.spy(),
+        onGetTeamDone: sinon.spy(),
+        onGetPlayerDone: sinon.spy(),
+        onGetScheduleDone: sinon.spy(),
+        onGetAthleteDone: sinon.spy()
     });
 
     describe("Requester", function() {
 
-        var requesterTester;
+        var ff;
 
         beforeEach(function() {
-            requesterTester = new RequesterTester();
+            ff = new FantasyFootball();
             ajaxStub = sinon.stub($, "ajax", function() {
                 return $.Deferred();
             });
@@ -100,7 +100,7 @@
 
         afterEach(function() {
             $.mockjaxClear();
-            requesterTester = null;
+            ff = null;
             ajaxStub.restore();
             localStorage.clear();
         });
@@ -113,69 +113,61 @@
         describe("execute function", function() {
 
             it("should initialize requests on first call to `execute`", function() {
-            	var rt = requesterTester;
-                expect(rt._requestsInitialized).to.be.false;
-                expect(rt._requests).to.be.empty;
+                expect(ff._requestsInitialized).to.be.false;
+                expect(ff._requests).to.be.empty;
 
-                rt.execute(rt.requests.getBranches).resolve();
+                ff.execute(ff.requests.getLeagues).resolve();
 
-                expect(rt._requestsInitialized).to.be.true;
-                expect(rt._requests).not.to.be.empty;
-                expect(rt._requests.getBranches).to.exist;
+                expect(ff._requestsInitialized).to.be.true;
+                expect(ff._requests).not.to.be.empty;
+                expect(ff._requests.getLeagues).to.exist;
             });
 
             it("should be able to execute a pre-defined request", function() {
-                requesterTester.execute(requesterTester.requests.getBranches).resolve();
-                expect(requesterTester.onGetBranchesDone.called).to.be.true;
+                ff.execute(ff.requests.getLeagues).resolve();
+                expect(ff.onGetLeaguesDone.called).to.be.true;
             });
 
             it("should execute pre-defined requests with the correct options", function () {
-            	var rt = requesterTester;
-            	rt.execute(rt.requests.getBranches).resolve();
+            	ff.execute(ff.requests.getLeagues).resolve();
             	expect(ajaxStub.lastCall.args[0].type).to.equal("get");
-            	expect(ajaxStub.lastCall.args[0].url).to.equal("http://example.com/branches");
+            	expect(ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
             });
 
             it("should execute pre-defined requests with the proper context", function () {
-            	var rt = requesterTester;
-            	rt.execute(rt.requests.getBranches).resolve();
-            	expect(rt.onGetBranchesDone.lastCall.thisValue).to.equal(rt);
+            	ff.execute(ff.requests.getLeagues).resolve();
+            	expect(ff.onGetLeaguesDone.lastCall.thisValue).to.equal(ff);
             });
 
             it("should execute pre-defined fail callbacks when execute fails", function () {
-            	var rt = requesterTester;
-            	rt.execute(rt.requests.getBranches).reject();
-            	expect(rt.onGetBranchesFail.called).to.be.true;
+            	ff.execute(ff.requests.getLeagues).reject();
+            	expect(ff.onGetLeaguesFail.called).to.be.true;
             });
 
            	it("should execute chained callbacks on execution", function () {
-    			var rt = requesterTester;
-    			rt.execute(rt.requests.getBranch).done(rt.onGetBranchDone).resolve();
-    			expect(rt.onGetBranchDone.called).to.be.true;
+    			ff.execute(ff.requests.getTeam).done(ff.onGetTeamDone).resolve();
+    			expect(ff.onGetTeamDone.called).to.be.true;
 			});
 
 			it("should accept and use static data as a data parameter", function () {
-				var rt = requesterTester;
-				rt.execute(rt.requests.getLeaf).resolve();
+				ff.execute(ff.requests.getPlayer).resolve();
 				var callData = ajaxStub.lastCall.args[0].data;
-				expect(callData.branchId).to.equal("12345");
+				expect(callData.teamId).to.equal("12345");
 			});
 
 			it("should accept and execute a pre-defined function as the data parameter", function () {
-				var rt = requesterTester;
-				rt.execute(rt.requests.getTwig).resolve();
+				ff.execute(ff.requests.getSchedule).resolve();
 				var callData = ajaxStub.lastCall.args[0].data;
-				expect(callData.branchId).to.equal("12345");
-				expect(callData.leaves).to.be.an("array");
-				expect(callData.leaves.length).to.equal(5);
+				expect(callData.leagueId).to.equal("12345");
+				expect(callData.players).to.be.an("array");
+				expect(callData.players.length).to.equal(5);
 			});
 
 			it("should accept and execute an anonymous function as a data parameter", function () {
-				var rt = requesterTester;
-				rt.execute(rt.requests.getTrunk).resolve();
+				ff.execute(ff.requests.getAthlete).resolve();
 				var callData = ajaxStub.lastCall.args[0].data;
-				expect(callData.mountain).to.equal(23456);
-				expect(callData.grove).to.equal(34567);
+				expect(callData.teamId).to.equal(23456);
+				expect(callData.leagueId).to.equal(34567);
 			});
 
         });
