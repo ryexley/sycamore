@@ -38,8 +38,7 @@ module.exports = function (grunt) {
             all: {
                 options: {
                     run: true,
-                    urls: ["spec/runner.html"],
-                    growl: true
+                    urls: ["spec/runner.html"]
                 }
             }
         },
