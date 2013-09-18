@@ -1,6 +1,6 @@
 // sycamore, v0.1.6 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-09-18 @ 4:43:48
+// Generated: 2013-09-18 @ 5:28:55
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -83,6 +83,10 @@
             },
 
             delayFor: function (target, context) {
+                return target;
+            },
+
+            cache: function (target, context) {
                 return target;
             }
         },

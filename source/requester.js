@@ -78,6 +78,10 @@
 
             delayFor: function (target, context) {
                 return target;
+            },
+
+            cache: function (target, context) {
+                return target;
             }
         },
         /* jshint unused:true */

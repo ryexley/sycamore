@@ -69,6 +69,22 @@
             		};
             	},
             	done: "onGetAthleteDone"
+            },
+
+            getTeamStats: {
+            	url: "http://example.com/team/56789/stats",
+            	cache: {
+            		key: "team-stats",
+            		expiresAfter: 2
+            	}
+            },
+
+            createLeague: {
+            	url: "http://example.com/leages",
+            	type: "post",
+            	data: { ownerId: 45678, name: "Lame fantasy league name" },
+            	done: "onCreateLeagueDone",
+            	fail: "onCreateLeagueFail"
             }
         },
 
@@ -84,7 +100,9 @@
         onGetTeamDone: sinon.spy(),
         onGetPlayerDone: sinon.spy(),
         onGetScheduleDone: sinon.spy(),
-        onGetAthleteDone: sinon.spy()
+        onGetAthleteDone: sinon.spy(),
+        onCreateLeagueDone: sinon.spy(),
+        onCreateLeagueFail: sinon.spy()
     });
 
     describe("Requester", function() {
@@ -132,6 +150,11 @@
             	ff.execute(ff.requests.getLeagues).resolve();
             	expect(ajaxStub.lastCall.args[0].type).to.equal("get");
             	expect(ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
+
+            	ff.execute(ff.requests.createLeague).resolve();
+            	expect(ajaxStub.lastCall.args[0].type).to.equal("post");
+            	expect(ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
+            	expect(ff.onCreateLeagueDone.called).to.be.true;
             });
 
             it("should execute pre-defined requests with the proper context", function () {
@@ -171,6 +194,27 @@
 			});
 
         });
+
+		describe("caching", function () {
+
+			it("should cache response in memory when configured", function () {
+				var response = {
+					foo: "bar",
+					bar: "foo"
+				};
+
+				var server = sinon.fakeServer.create();
+				server.respondWith("GET", ff.requests.getTeamStats.url, [
+					200,
+					{ "Content-Type": "application/json" },
+					JSON.stringify(response)
+				]);
+
+				ff.execute(ff.requests.getTeamStats).resolve();
+				expect(ff._memoryCache[ff.requests.getTeamStats.cache.key]).to.exist;
+			});
+
+		});
 
     });
 
