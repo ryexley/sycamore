@@ -57,7 +57,6 @@
             },
 
             data: function (target, context) {
-                // return target;
                 if (context[target]) {
                     return context[target];
                 } else {
