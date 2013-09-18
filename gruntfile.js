@@ -34,6 +34,16 @@ module.exports = function (grunt) {
             }
         },
 
+        mocha: {
+            all: {
+                options: {
+                    run: true,
+                    urls: ["spec/runner.html"],
+                    growl: true
+                }
+            }
+        },
+
         uglify: {
             dist: {
                 options: {
@@ -47,7 +57,7 @@ module.exports = function (grunt) {
 
         watch: {
             scripts: {
-                files: ["source/*.js"],
+                files: ["source/*.js", "spec/*.js"],
                 tasks: ["default"],
                 options: {
                     nospawn: true
@@ -61,7 +71,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-mocha");
 
-    grunt.registerTask("default", ["jshint", "build"]);
+    grunt.registerTask("default", ["jshint", "build", "test"]);
     grunt.registerTask("build", ["concat", "uglify"]);
+    grunt.registerTask("test", ["mocha"]);
 }

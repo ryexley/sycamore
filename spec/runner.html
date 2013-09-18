@@ -14,14 +14,15 @@
 		<script src="../node_modules/chai/chai.js"></script>
 		<script src="../node_modules/sinon/pkg/sinon-1.7.3.js"></script>
 		<script src="../node_modules/mocha/mocha.js"></script>
-		<script>mocha.setup("bdd");</script>
+		<script>mocha.setup({ ui: "bdd", ignoreLeaks: true });</script>
 
-		<script src="../source/requester.js"></script>
+		<script src="../dist/requester.min.js"></script>
 		<script src="requester.spec.js"></script>
 		<script>
-			(function () {
+			mocha.checkLeaks();
+			if (navigator.userAgent.indexOf('PhantomJS') < 0) {
 				mocha.run();
-			}());
+			}
 		</script>
 	</body>
 </html>
