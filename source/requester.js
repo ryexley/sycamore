@@ -206,6 +206,8 @@
         },
 
         _handleConfiguredCallbacks: function (params, request) {
+            var self = this;
+
             if (params.done) {
                 request.done(params.done.bind(params.context || self));
             }
