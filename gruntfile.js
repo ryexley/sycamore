@@ -62,6 +62,15 @@ module.exports = function (grunt) {
                     nospawn: true
                 }
             }
+        },
+
+        bump: {
+            options: {
+                files: ["package.json", "bower.json"],
+                updateConfigs: ["pkg"],
+                commitFiles: ["-a"],
+                push: false
+            }
         }
 
     });
@@ -71,8 +80,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-mocha");
+    grunt.loadNpmTasks("grunt-bump");
 
     grunt.registerTask("default", ["jshint", "build", "test"]);
     grunt.registerTask("build", ["concat", "uglify"]);
     grunt.registerTask("test", ["mocha"]);
+    grunt.registerTask("release", ["bump-only", "build", "bump-commit"]);
 }

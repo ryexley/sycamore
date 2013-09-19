@@ -1,6 +1,6 @@
 {
     "name": "sycamore",
-    "version": "0.1.6",
+    "version": "0.1.10",
     "main": "dist/requester.js",
     "ignore": [
         "source",

@@ -1,6 +1,6 @@
-// sycamore, v0.1.6 | (c) 2013 Bob Yexley
+// sycamore, v0.1.10 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-09-19 @ 12:22:47
+// Generated: 2013-09-19 @ 2:18:35
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
