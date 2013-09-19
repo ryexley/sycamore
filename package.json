@@ -1,6 +1,6 @@
 {
   "name": "sycamore",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options",
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -12,6 +12,7 @@
     "mocha": "~1.11.0",
     "chai": "~1.6.1",
     "sinon": "~1.7.3",
-    "blanket": "~1.1.5"
+    "blanket": "~1.1.5",
+    "grunt-bump": "0.0.11"
   }
 }
