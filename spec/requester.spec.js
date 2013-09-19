@@ -87,6 +87,15 @@
                 }
             },
 
+            getMatchup: {
+                url: "http://example.com/league/12345/matchup/34567",
+                done: "onGetMatchupDone",
+                cache: {
+                    expiresAfter: 2,
+                    key: "matchup"
+                }
+            },
+
             createLeague: {
                 url: "http://example.com/leages",
                 type: "post",
@@ -112,6 +121,7 @@
         this.onGetTeamStatsDone = sinon.spy();
         this.onGetTeamStatsFail = sinon.spy();
         this.onGetPlayerRecordDone = sinon.spy();
+        this.onGetMatchupDone = sinon.spy();
         this.onCreateLeagueDone = sinon.spy();
         this.onCreateLeagueFail = sinon.spy();
     };
@@ -243,8 +253,11 @@
                 this.ff.execute(request).resolve(response);
                 setTimeout(function () {
                     var results = self.ff.execute(request);
-                    expect(self.ff.onGetTeamStatsDone.calledOnce).to.be.true;
-                    done();
+                    results.done(function (data) {
+                        expect(self.ff.onGetTeamStatsDone.calledOnce).to.be.true;
+                        expect(data).to.eql(response);
+                        done();
+                    });
                 }, 50);
             });
 
@@ -262,7 +275,34 @@
                 this.ff.execute(request).resolve(response);
                 setTimeout(function () {
                     var results = self.ff.execute(request);
-                    expect(self.ff.onGetPlayerRecordDone.calledOnce).to.be.true;
+                    results.done(function (data) {
+                        expect(self.ff.onGetPlayerRecordDone.calledOnce).to.be.true;
+                        expect(data).to.eql(response);
+                        done();
+                    });
+                }, 50);
+            });
+
+            it("should request data from the network again after cache has expired", function (done) {
+                var self = this;
+                var request = this.ff.requests.getMatchup;
+                var response = {
+                    home: {
+                        playerId: 12345,
+                        points: 100
+                    },
+                    guest: {
+                        playerId: 23456,
+                        points: 115
+                    }
+                };
+
+                this.ff.execute(request).resolve(response);
+                setTimeout(function () {
+                    request.cache.expires = self.ff.dates.convert(Date.now());
+                    self.ff.execute(request).resolve(response);
+                    expect(self.ff.onGetMatchupDone.calledTwice).to.be.true;
+                    expect(self.ff._memoryCache[request.cache.key]).to.eql(response);
                     done();
                 }, 50);
             });

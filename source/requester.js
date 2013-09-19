@@ -238,7 +238,7 @@
             return this.execute(params);
         },
 
-        // http://stackoverflow.com/questions/497790
+        // adapted from http://stackoverflow.com/questions/497790
         dates: {
             convert: function (date) {
                 // Converts the date in `date` to a date-object. The input can be:
@@ -287,13 +287,15 @@
                 //    false : if date is before start or after end
                 //    NaN   : if one or more of the dates is illegal.
                 // NOTE: The code inside isFinite does an assignment (=).
-                return (
+                var results = (
                     isFinite(date = this.convert(date).valueOf()) &&
                     isFinite(start = this.convert(start).valueOf()) &&
                     isFinite(end = this.convert(end).valueOf()) ?
                     start <= date && date <= end :
                     NaN
                 );
+
+                return results;
             },
 
             addMinutes: function (date, minutes) {
