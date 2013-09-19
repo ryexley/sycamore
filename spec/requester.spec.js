@@ -28,14 +28,10 @@
     var should = chai.should;
     var assert = chai.assert;
 
-    var ajaxStub;
-
     var FantasyFootball = function(options) {
         this.options = options || {};
-    };
 
-    _.extend(FantasyFootball.prototype, Requester, {
-        requests: {
+        this.requests = {
             getLeagues: {
                 url: "http://example.com/leagues",
                 done: "onGetLeaguesDone",
@@ -43,40 +39,40 @@
             },
 
             getTeam: {
-            	url: "http://example.com/teams/12345"
+                url: "http://example.com/teams/12345"
             },
 
             getPlayer: {
-            	url: "http://example.com/players/12345",
-            	data: {
-            		teamId: "12345"
-            	},
-            	done: "onGetPlayerDone"
+                url: "http://example.com/players/12345",
+                data: {
+                    teamId: "12345"
+                },
+                done: "onGetPlayerDone"
             },
 
             getSchedule: {
-            	url: "http://example.com/leagues/12345/schedule",
-            	data: "getScheduleData",
-            	done: "onGetScheduleDone"
+                url: "http://example.com/leagues/12345/schedule",
+                data: "getScheduleData",
+                done: "onGetScheduleDone"
             },
 
             getAthlete: {
-            	url: "http://example.com/athlete/12345",
-            	data: function () {
-            		return {
-            			teamId: 23456,
-            			leagueId: 34567
-            		};
-            	},
-            	done: "onGetAthleteDone"
+                url: "http://example.com/athlete/12345",
+                data: function () {
+                    return {
+                        teamId: 23456,
+                        leagueId: 34567
+                    };
+                },
+                done: "onGetAthleteDone"
             },
 
             getTeamStats: {
-            	url: "http://example.com/team/56789/stats",
-            	cache: {
-            		key: "team-stats",
-            		expiresAfter: 2
-            	},
+                url: "http://example.com/team/56789/stats",
+                cache: {
+                    key: "team-stats",
+                    expiresAfter: 2
+                },
                 done: "onGetTeamStatsDone",
                 fail: "onGetTeamStatsFail"
             },
@@ -92,49 +88,48 @@
             },
 
             createLeague: {
-            	url: "http://example.com/leages",
-            	type: "post",
-            	data: { ownerId: 45678, name: "Lame fantasy league name" },
-            	done: "onCreateLeagueDone",
-            	fail: "onCreateLeagueFail"
+                url: "http://example.com/leages",
+                type: "post",
+                data: { ownerId: 45678, name: "Lame fantasy league name" },
+                done: "onCreateLeagueDone",
+                fail: "onCreateLeagueFail"
             }
-        },
+        };
 
-        getScheduleData: function () {
-        	return {
-        		leagueId: "12345",
-        		players: [1, 2, 3, 4, 5]
-        	};
-        },
+        this.getScheduleData = function () {
+            return {
+                leagueId: "12345",
+                players: [1, 2, 3, 4, 5]
+            };
+        };
 
-        onGetLeaguesDone: sinon.spy(),
-        onGetLeaguesFail: sinon.spy(),
-        onGetTeamDone: sinon.spy(),
-        onGetPlayerDone: sinon.spy(),
-        onGetScheduleDone: sinon.spy(),
-        onGetAthleteDone: sinon.spy(),
-        onGetTeamStatsDone: sinon.spy(),
-        onGetTeamStatsFail: sinon.spy(),
-        onGetPlayerRecordDone: sinon.spy(),
-        onCreateLeagueDone: sinon.spy(),
-        onCreateLeagueFail: sinon.spy()
-    });
+        this.onGetLeaguesDone = sinon.spy();
+        this.onGetLeaguesFail = sinon.spy();
+        this.onGetTeamDone = sinon.spy();
+        this.onGetPlayerDone = sinon.spy();
+        this.onGetScheduleDone = sinon.spy();
+        this.onGetAthleteDone = sinon.spy();
+        this.onGetTeamStatsDone = sinon.spy();
+        this.onGetTeamStatsFail = sinon.spy();
+        this.onGetPlayerRecordDone = sinon.spy();
+        this.onCreateLeagueDone = sinon.spy();
+        this.onCreateLeagueFail = sinon.spy();
+    };
+
+    _.extend(FantasyFootball.prototype, Requester);
 
     describe("Requester", function() {
 
-        var ff;
-
         beforeEach(function() {
-            ff = new FantasyFootball();
-            ajaxStub = sinon.stub($, "ajax", function() {
+            this.ff = new FantasyFootball();
+            this.ajaxStub = sinon.stub($, "ajax", function() {
                 return $.Deferred();
             });
         });
 
         afterEach(function() {
-            $.mockjaxClear();
-            ff = null;
-            ajaxStub.restore();
+            this.ff = null;
+            this.ajaxStub.restore();
             localStorage.clear();
         });
 
@@ -146,64 +141,64 @@
         describe("execution", function() {
 
             it("should initialize requests on first call to `execute`", function() {
-                expect(ff._requestsInitialized).to.be.false;
-                expect(ff._requests).to.be.empty;
+                expect(this.ff._requestsInitialized).to.be.false;
+                expect(this.ff._requests).to.be.empty;
 
-                ff.execute(ff.requests.getLeagues).resolve();
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
 
-                expect(ff._requestsInitialized).to.be.true;
-                expect(ff._requests).not.to.be.empty;
-                expect(ff._requests.getLeagues).to.exist;
+                expect(this.ff._requestsInitialized).to.be.true;
+                expect(this.ff._requests).not.to.be.empty;
+                expect(this.ff._requests.getLeagues).to.exist;
             });
 
             it("should be able to execute a pre-defined request", function() {
-                ff.execute(ff.requests.getLeagues).resolve();
-                expect(ff.onGetLeaguesDone.called).to.be.true;
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
+                expect(this.ff.onGetLeaguesDone.called).to.be.true;
             });
 
             it("should execute pre-defined requests with the correct options", function () {
-            	ff.execute(ff.requests.getLeagues).resolve();
-            	expect(ajaxStub.lastCall.args[0].type).to.equal("get");
-            	expect(ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
+            	this.ff.execute(this.ff.requests.getLeagues).resolve();
+            	expect(this.ajaxStub.lastCall.args[0].type).to.equal("get");
+            	expect(this.ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
 
-            	ff.execute(ff.requests.createLeague).resolve();
-            	expect(ajaxStub.lastCall.args[0].type).to.equal("post");
-            	expect(ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
-            	expect(ff.onCreateLeagueDone.called).to.be.true;
+            	this.ff.execute(this.ff.requests.createLeague).resolve();
+            	expect(this.ajaxStub.lastCall.args[0].type).to.equal("post");
+            	expect(this.ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
+            	expect(this.ff.onCreateLeagueDone.called).to.be.true;
             });
 
             it("should execute pre-defined requests with the proper context", function () {
-            	ff.execute(ff.requests.getLeagues).resolve();
-            	expect(ff.onGetLeaguesDone.lastCall.thisValue).to.equal(ff);
+            	this.ff.execute(this.ff.requests.getLeagues).resolve();
+            	expect(this.ff.onGetLeaguesDone.lastCall.thisValue).to.equal(this.ff);
             });
 
             it("should execute pre-defined fail callbacks when execute fails", function () {
-            	ff.execute(ff.requests.getLeagues).reject();
-            	expect(ff.onGetLeaguesFail.called).to.be.true;
+            	this.ff.execute(this.ff.requests.getLeagues).reject();
+            	expect(this.ff.onGetLeaguesFail.called).to.be.true;
             });
 
            	it("should execute chained callbacks on execution", function () {
-    			ff.execute(ff.requests.getTeam).done(ff.onGetTeamDone).resolve();
-    			expect(ff.onGetTeamDone.called).to.be.true;
+    			this.ff.execute(this.ff.requests.getTeam).done(this.ff.onGetTeamDone).resolve();
+    			expect(this.ff.onGetTeamDone.called).to.be.true;
 			});
 
 			it("should accept and use static data as a data parameter", function () {
-				ff.execute(ff.requests.getPlayer).resolve();
-				var callData = ajaxStub.lastCall.args[0].data;
+				this.ff.execute(this.ff.requests.getPlayer).resolve();
+				var callData = this.ajaxStub.lastCall.args[0].data;
 				expect(callData.teamId).to.equal("12345");
 			});
 
 			it("should accept and execute a pre-defined function as the data parameter", function () {
-				ff.execute(ff.requests.getSchedule).resolve();
-				var callData = ajaxStub.lastCall.args[0].data;
+				this.ff.execute(this.ff.requests.getSchedule).resolve();
+				var callData = this.ajaxStub.lastCall.args[0].data;
 				expect(callData.leagueId).to.equal("12345");
 				expect(callData.players).to.be.an("array");
 				expect(callData.players.length).to.equal(5);
 			});
 
 			it("should accept and execute an anonymous function as a data parameter", function () {
-				ff.execute(ff.requests.getAthlete).resolve();
-				var callData = ajaxStub.lastCall.args[0].data;
+				this.ff.execute(this.ff.requests.getAthlete).resolve();
+				var callData = this.ajaxStub.lastCall.args[0].data;
 				expect(callData.teamId).to.equal(23456);
 				expect(callData.leagueId).to.equal(34567);
 			});
@@ -213,16 +208,16 @@
 		describe("caching", function () {
 
 			it("should cache response in memory when configured", function () {
-                var request = ff.requests.getTeamStats;
-                var response = { one:"two", three: "four" };
+                var request = this.ff.requests.getTeamStats;
+                var response = { one: "two", three: "four" };
 
-				ff.execute(request).resolve(response);
-                expect(ff.onGetTeamStatsDone.lastCall.args[0]).to.equal(response);
-                expect(ff._memoryCache[ff.requests.getTeamStats.cache.key]).to.exist;
+				this.ff.execute(request).resolve(response);
+                expect(this.ff.onGetTeamStatsDone.lastCall.args[0]).to.equal(response);
+                expect(this.ff._memoryCache[this.ff.requests.getTeamStats.cache.key]).to.exist;
 			});
 
             it("should cache response in localStorage when configured", function () {
-                var request = ff.requests.getPlayerRecord;
+                var request = this.ff.requests.getPlayerRecord;
                 var response = {
                     playerId: 23456,
                     record: {
@@ -231,13 +226,45 @@
                     }
                 };
 
-                ff.execute(request).resolve(response);
-                expect(ff.onGetPlayerRecordDone.lastCall.args[0]).to.equal(response);
+                this.ff.execute(request).resolve(response);
+                expect(this.ff.onGetPlayerRecordDone.lastCall.args[0]).to.equal(response);
                 expect(localStorage["requestDataCache"]).to.exist;
 
                 var cache = JSON.parse(localStorage.requestDataCache);
                 expect(cache[request.cache.key]).to.exist;
                 expect(cache[request.cache.key]).to.eql(response);
+            });
+
+            it("should prevent server requests when cached in memory", function (done) {
+                var self = this;
+                var request = this.ff.requests.getTeamStats;
+                var response = { one: "two", three: "four" };
+
+                this.ff.execute(request).resolve(response);
+                setTimeout(function () {
+                    var results = self.ff.execute(request);
+                    expect(self.ff.onGetTeamStatsDone.calledOnce).to.be.true;
+                    done();
+                }, 50);
+            });
+
+            it("should prevent server requests when cached in localStorage", function (done) {
+                var self = this;
+                var request = this.ff.requests.getPlayerRecord;
+                var response = {
+                    playerId: 23456,
+                    record: {
+                        wins: 4,
+                        losses: 1
+                    }
+                };
+
+                this.ff.execute(request).resolve(response);
+                setTimeout(function () {
+                    var results = self.ff.execute(request);
+                    expect(self.ff.onGetPlayerRecordDone.calledOnce).to.be.true;
+                    done();
+                }, 50);
             });
 
 		});

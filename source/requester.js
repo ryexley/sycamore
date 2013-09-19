@@ -126,7 +126,7 @@
                 // var expired = (params.cache.expires && (this.dates.compare(Date.now(), params.cache.expires) > 0));
                 var expired = true;
                 if (params.cache.expires) {
-                    if (this.dates.compare(Date.now(), params.cache.expires) > 0) {
+                    if (this.dates.compare(Date.now(), params.cache.expires) < 0) {
                         expired = false;
                     }
                 }
@@ -134,7 +134,9 @@
                 if (!expired) {
                     var cached = self._getCachedData(params.cache);
                     if (cached) {
-                        return cached;
+                        var response = $.Deferred();
+                        response.resolve(cached);
+                        return response.promise();
                     }
                 }
             }
@@ -254,7 +256,7 @@
                     date.constructor === Number ? new Date(date) :
                     date.constructor === String ? new Date(date) :
                     typeof date === "object" ? new Date(date.year, date.month, date.date) :
-                    this.addMinutes(Date.now(), -(60 * 24 * 365 * 100))
+                    NaN // this.addMinutes(Date.now(), -(60 * 24 * 365 * 100)) // 100 years ago
                 );
 
                 return results;
