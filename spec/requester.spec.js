@@ -76,7 +76,19 @@
             	cache: {
             		key: "team-stats",
             		expiresAfter: 2
-            	}
+            	},
+                done: "onGetTeamStatsDone",
+                fail: "onGetTeamStatsFail"
+            },
+
+            getPlayerRecord: {
+                url: "http://example.com/player/23456/record",
+                done: "onGetPlayerRecordDone",
+                cache: {
+                    key: "player-record",
+                    expiresAfter: 5,
+                    store: "local"
+                }
             },
 
             createLeague: {
@@ -101,6 +113,9 @@
         onGetPlayerDone: sinon.spy(),
         onGetScheduleDone: sinon.spy(),
         onGetAthleteDone: sinon.spy(),
+        onGetTeamStatsDone: sinon.spy(),
+        onGetTeamStatsFail: sinon.spy(),
+        onGetPlayerRecordDone: sinon.spy(),
         onCreateLeagueDone: sinon.spy(),
         onCreateLeagueFail: sinon.spy()
     });
@@ -128,7 +143,7 @@
             // });
         });
 
-        describe("execute function", function() {
+        describe("execution", function() {
 
             it("should initialize requests on first call to `execute`", function() {
                 expect(ff._requestsInitialized).to.be.false;
@@ -198,21 +213,32 @@
 		describe("caching", function () {
 
 			it("should cache response in memory when configured", function () {
-				var response = {
-					foo: "bar",
-					bar: "foo"
-				};
+                var request = ff.requests.getTeamStats;
+                var response = { one:"two", three: "four" };
 
-				var server = sinon.fakeServer.create();
-				server.respondWith("GET", ff.requests.getTeamStats.url, [
-					200,
-					{ "Content-Type": "application/json" },
-					JSON.stringify(response)
-				]);
-
-				ff.execute(ff.requests.getTeamStats).resolve();
-				expect(ff._memoryCache[ff.requests.getTeamStats.cache.key]).to.exist;
+				ff.execute(request).resolve(response);
+                expect(ff.onGetTeamStatsDone.lastCall.args[0]).to.equal(response);
+                expect(ff._memoryCache[ff.requests.getTeamStats.cache.key]).to.exist;
 			});
+
+            it("should cache response in localStorage when configured", function () {
+                var request = ff.requests.getPlayerRecord;
+                var response = {
+                    playerId: 23456,
+                    record: {
+                        wins: 4,
+                        losses: 1
+                    }
+                };
+
+                ff.execute(request).resolve(response);
+                expect(ff.onGetPlayerRecordDone.lastCall.args[0]).to.equal(response);
+                expect(localStorage["requestDataCache"]).to.exist;
+
+                var cache = JSON.parse(localStorage.requestDataCache);
+                expect(cache[request.cache.key]).to.exist;
+                expect(cache[request.cache.key]).to.eql(response);
+            });
 
 		});
 

@@ -1,6 +1,6 @@
 // sycamore, v0.1.6 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-09-18 @ 5:28:55
+// Generated: 2013-09-19 @ 12:13:48
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -105,7 +105,7 @@
 
         _cacheData: function (cache, data) {
             if (cache.store === "local" && this._isLocalStorageSupported()) {
-                var requestDataCache = JSON.parse(localStorage.getItem("requestDataCache"));
+                var requestDataCache = JSON.parse(localStorage.getItem("requestDataCache")) || {};
                 requestDataCache[cache.key] = data;
                 localStorage.setItem("requestDataCache", JSON.stringify(requestDataCache));
             } else {
@@ -129,7 +129,14 @@
             var requestData;
 
             if (params.cache) {
-                var expired = (params.cache.expires && this.dates.compare(Date.now(), params.cache.expires) > 0);
+                // var expired = (params.cache.expires && (this.dates.compare(Date.now(), params.cache.expires) > 0));
+                var expired = true;
+                if (params.cache.expires) {
+                    if (this.dates.compare(Date.now(), params.cache.expires) > 0) {
+                        expired = false;
+                    }
+                }
+
                 if (!expired) {
                     var cached = self._getCachedData(params.cache);
                     if (cached) {
@@ -247,14 +254,16 @@
                 //                  "YYYY/MM/DD", "MM/DD/YYYY", "Jan 31 2009" etc.
                 //  an object     : Interpreted as an object with year, month and date
                 //                  attributes.  **NOTE** month is 0-11.
-                return (
+                var results = (
                     date.constructor === Date ? date :
                     date.constructor === Array ? new Date(date[0], date[1], date[2]) :
                     date.constructor === Number ? new Date(date) :
                     date.constructor === String ? new Date(date) :
                     typeof date === "object" ? new Date(date.year, date.month, date.date) :
-                    NaN
+                    this.addMinutes(Date.now(), -(60 * 24 * 365 * 100))
                 );
+
+                return results;
             },
 
             compare: function (a, b) {
@@ -265,12 +274,14 @@
                 //   1 : if a > b
                 // NaN : if a or b is an illegal date
                 // NOTE: The code inside isFinite does an assignment (=).
-                return (
+                var results = (
                     isFinite(a = this.convert(a).valueOf()) &&
                     isFinite(b = this.convert(b).valueOf()) ?
                     (a > b) - (a < b) :
-                    NaN
+                    false
                 );
+
+                return results;
             },
 
             inRange: function (date, start, end) {
