@@ -2,6 +2,10 @@
   "name": "sycamore",
   "version": "0.2.0",
   "description": "A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ryexley/sycamore.git"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.4",
@@ -9,7 +13,7 @@
     "grunt-contrib-uglify": "~0.2.4",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-mocha": "~0.4.1",
-    "mocha": "~1.11.0",
+    "mocha": "~1.13.0",
     "chai": "~1.6.1",
     "sinon": "~1.7.3",
     "blanket": "~1.1.5",

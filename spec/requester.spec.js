@@ -180,51 +180,51 @@
             });
 
             it("should execute pre-defined requests with the correct options", function () {
-            	this.ff.execute(this.ff.requests.getLeagues).resolve();
-            	expect(this.ajaxStub.lastCall.args[0].type).to.equal("get");
-            	expect(this.ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
+                expect(this.ajaxStub.lastCall.args[0].type).to.equal("get");
+                expect(this.ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
 
-            	this.ff.execute(this.ff.requests.createLeague).resolve();
-            	expect(this.ajaxStub.lastCall.args[0].type).to.equal("post");
-            	expect(this.ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
-            	expect(this.ff.onCreateLeagueDone.called).to.be.true;
+                this.ff.execute(this.ff.requests.createLeague).resolve();
+                expect(this.ajaxStub.lastCall.args[0].type).to.equal("post");
+                expect(this.ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
+                expect(this.ff.onCreateLeagueDone.called).to.be.true;
             });
 
             it("should execute pre-defined requests with the proper context", function () {
-            	this.ff.execute(this.ff.requests.getLeagues).resolve();
-            	expect(this.ff.onGetLeaguesDone.lastCall.thisValue).to.equal(this.ff);
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
+                expect(this.ff.onGetLeaguesDone.lastCall.thisValue).to.equal(this.ff);
             });
 
             it("should execute pre-defined fail callbacks when execute fails", function () {
-            	this.ff.execute(this.ff.requests.getLeagues).reject();
-            	expect(this.ff.onGetLeaguesFail.called).to.be.true;
+                this.ff.execute(this.ff.requests.getLeagues).reject();
+                expect(this.ff.onGetLeaguesFail.called).to.be.true;
             });
 
-           	it("should execute chained callbacks on execution", function () {
-    			this.ff.execute(this.ff.requests.getTeam).done(this.ff.onGetTeamDone).resolve();
-    			expect(this.ff.onGetTeamDone.called).to.be.true;
-			});
+            it("should execute chained callbacks on execution", function () {
+                this.ff.execute(this.ff.requests.getTeam).done(this.ff.onGetTeamDone).resolve();
+                expect(this.ff.onGetTeamDone.called).to.be.true;
+            });
 
-			it("should accept and use static data as a data parameter", function () {
-				this.ff.execute(this.ff.requests.getPlayer).resolve();
-				var callData = this.ajaxStub.lastCall.args[0].data;
-				expect(callData.teamId).to.equal("12345");
-			});
+            it("should accept and use static data as a data parameter", function () {
+                this.ff.execute(this.ff.requests.getPlayer).resolve();
+                var callData = this.ajaxStub.lastCall.args[0].data;
+                expect(callData.teamId).to.equal("12345");
+            });
 
-			it("should accept and execute a pre-defined function as the data parameter", function () {
-				this.ff.execute(this.ff.requests.getSchedule).resolve();
-				var callData = this.ajaxStub.lastCall.args[0].data;
-				expect(callData.leagueId).to.equal("12345");
-				expect(callData.players).to.be.an("array");
-				expect(callData.players.length).to.equal(5);
-			});
+            it("should accept and execute a pre-defined function as the data parameter", function () {
+                this.ff.execute(this.ff.requests.getSchedule).resolve();
+                var callData = this.ajaxStub.lastCall.args[0].data;
+                expect(callData.leagueId).to.equal("12345");
+                expect(callData.players).to.be.an("array");
+                expect(callData.players.length).to.equal(5);
+            });
 
-			it("should accept and execute an anonymous function as a data parameter", function () {
-				this.ff.execute(this.ff.requests.getAthlete).resolve();
-				var callData = this.ajaxStub.lastCall.args[0].data;
-				expect(callData.teamId).to.equal(23456);
-				expect(callData.leagueId).to.equal(34567);
-			});
+            it("should accept and execute an anonymous function as a data parameter", function () {
+                this.ff.execute(this.ff.requests.getAthlete).resolve();
+                var callData = this.ajaxStub.lastCall.args[0].data;
+                expect(callData.teamId).to.equal(23456);
+                expect(callData.leagueId).to.equal(34567);
+            });
 
             it("should transform tokenized URLs using request data", function () {
                 var request = this.ff.requests.getLeague;
@@ -240,16 +240,16 @@
 
         });
 
-		describe("caching", function () {
+        describe("caching", function () {
 
-			it("should cache response in memory when configured", function () {
+            it("should cache response in memory when configured", function () {
                 var request = this.ff.requests.getTeamStats;
                 var response = { one: "two", three: "four" };
 
-				this.ff.execute(request).resolve(response);
+                this.ff.execute(request).resolve(response);
                 expect(this.ff.onGetTeamStatsDone.lastCall.args[0]).to.equal(response);
                 expect(this.ff._memoryCache[this.ff.requests.getTeamStats.cache.key]).to.exist;
-			});
+            });
 
             it("should cache response in localStorage when configured", function () {
                 var request = this.ff.requests.getPlayerRecord;
@@ -332,7 +332,7 @@
                 }, 50);
             });
 
-		});
+        });
 
     });
 
