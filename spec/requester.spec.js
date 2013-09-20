@@ -38,6 +38,17 @@
                 fail: "onGetLeaguesFail"
             },
 
+            getLeague: {
+                url: "http://example.com/leagues/{id}",
+                done: "onGetLeagueDone",
+                fail: "onGetLeagueFail",
+                data: function () {
+                    return {
+                        id: 98765
+                    };
+                }
+            },
+
             getTeam: {
                 url: "http://example.com/teams/12345"
             },
@@ -114,6 +125,8 @@
 
         this.onGetLeaguesDone = sinon.spy();
         this.onGetLeaguesFail = sinon.spy();
+        this.onGetLeagueDone = sinon.spy();
+        this.onGetLeagueFail = sinon.spy();
         this.onGetTeamDone = sinon.spy();
         this.onGetPlayerDone = sinon.spy();
         this.onGetScheduleDone = sinon.spy();
@@ -212,6 +225,18 @@
 				expect(callData.teamId).to.equal(23456);
 				expect(callData.leagueId).to.equal(34567);
 			});
+
+            it("should transform tokenized URLs using request data", function () {
+                var request = this.ff.requests.getLeague;
+                var response = {
+                    name: "Our super awesome 'murican fantasy football league",
+                    players: ["Joe Bob", "Billy Joe", "Cloyd Rivers"]
+                };
+
+                this.ff.execute(request).resolve(response);
+                var args = this.ajaxStub.lastCall.args[0];
+                expect(args.url).to.equal("http://example.com/leagues/98765");
+            });
 
         });
 

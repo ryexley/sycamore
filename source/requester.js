@@ -8,6 +8,10 @@
     }
 }(this, function ($, _) {
 
+    _.templateSettings = {
+        interpolate: /\{(.+?)\}/g
+    };
+
     var Requester = {
 
         _requestsInitialized: false,
@@ -151,6 +155,10 @@
                 requestData = params.data.call(params.context || self);
             } else {
                 requestData = params.data;
+            }
+
+            if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
+                params.url = _.template(params.url, requestData);
             }
 
             if (params.delayFor) {
