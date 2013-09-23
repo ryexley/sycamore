@@ -156,6 +156,8 @@
 
         beforeEach(function() {
             this.ff = new FantasyFootball();
+            this.executeSpy = {};
+            this._executeSpy = {};
             this.ajaxStub = sinon.stub($, "ajax", function() {
                 return $.Deferred();
             });
@@ -165,6 +167,14 @@
             this.ff = null;
             this.ajaxStub.restore();
             localStorage.clear();
+
+            if (!_.isEmpty(this.executeSpy) && this.executeSpy.restore) {
+                this.executeSpy.restore();
+            }
+
+            if (!_.isEmpty(this._executeSpy) && this._executeSpy.restore) {
+                this._executeSpy.restore();
+            }
         });
 
         describe("instances", function() {
@@ -250,16 +260,23 @@
             });
 
             it("should accept an optional second parameter for the data to execute with", function () {
-                var executeSpy = sinon.spy(FantasyFootball.prototype, "execute");
-                var _executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
+                this.executeSpy = sinon.spy(FantasyFootball.prototype, "execute");
+                this._executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
 
                 this.ff.getMatchupStats(10017);
 
-                expect(executeSpy.lastCall.args[1]).to.exist;
-                expect(_executeSpy.lastCall.args[1]).to.eql({ id: 10017 });
+                expect(this.executeSpy.lastCall.args[1]).to.exist;
+                expect(this._executeSpy.lastCall.args[1]).to.eql({});
+            });
 
-                executeSpy.restore();
-                _executeSpy.restore();
+            it("should remove any tokens used in the URL from request data", function () {
+                var _executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
+                var request = this.ff.requests.getMatchupStats;
+
+                this.ff.execute(request, { id: 10017, sort: "desc" });
+
+                expect(_executeSpy.lastCall.args[0].url).to.equal("http://example.com/league/12345/matchup/10017/stats")
+                expect(_executeSpy.lastCall.args[1]).to.eql({ sort: "desc" });
             });
 
         });

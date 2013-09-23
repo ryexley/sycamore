@@ -159,7 +159,17 @@
             requestData = (arguments.length > 1) ? data : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
-                params.url = _.template(params.url, requestData);
+                var tokenizedUrl = _.template(params.url, requestData);
+
+                if (!params.type || params.type.toLowerCase() === "get") {
+                    var urlTokens = params.url.match(/{(.*?)}/g);
+                    _.each(urlTokens, function (token) {
+                        token = token.replace("{", "").replace("}", "");
+                        delete requestData[token];
+                    });
+                }
+
+                params.url = tokenizedUrl;
             }
 
             if (params.delayFor) {
