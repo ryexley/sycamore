@@ -122,12 +122,11 @@
             }
         },
 
-        execute: function (params) {
+        execute: function (params, data) {
             var self = this;
             var requestData;
 
             if (params.cache) {
-                // var expired = (params.cache.expires && (this.dates.compare(Date.now(), params.cache.expires) > 0));
                 var expired = true;
                 if (params.cache.expires) {
                     if (this.dates.compare(Date.now(), params.cache.expires) < 0) {
@@ -156,6 +155,8 @@
             } else {
                 requestData = params.data;
             }
+
+            requestData = (arguments.length > 1) ? data : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 params.url = _.template(params.url, requestData);

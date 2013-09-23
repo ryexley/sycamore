@@ -107,6 +107,13 @@
                 }
             },
 
+            getMatchupStats: {
+                url: "http://example.com/league/12345/matchup/{id}/stats",
+                done: "onGetMatchupStatsDone",
+                fail: "onGetMatchupStatsFail",
+                data: { id: 0 }
+            },
+
             createLeague: {
                 url: "http://example.com/leages",
                 type: "post",
@@ -121,6 +128,10 @@
                 leagueId: "12345",
                 players: [1, 2, 3, 4, 5]
             };
+        };
+
+        this.getMatchupStats = function (matchupId) {
+            this.execute(this.requests.getMatchupStats, { id: matchupId });
         };
 
         this.onGetLeaguesDone = sinon.spy();
@@ -236,6 +247,19 @@
                 this.ff.execute(request).resolve(response);
                 var args = this.ajaxStub.lastCall.args[0];
                 expect(args.url).to.equal("http://example.com/leagues/98765");
+            });
+
+            it("should accept an optional second parameter for the data to execute with", function () {
+                var executeSpy = sinon.spy(FantasyFootball.prototype, "execute");
+                var _executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
+
+                this.ff.getMatchupStats(10017);
+
+                expect(executeSpy.lastCall.args[1]).to.exist;
+                expect(_executeSpy.lastCall.args[1]).to.eql({ id: 10017 });
+
+                executeSpy.restore();
+                _executeSpy.restore();
             });
 
         });
