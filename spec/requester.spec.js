@@ -150,7 +150,23 @@
         this.onCreateLeagueFail = sinon.spy();
     };
 
+    var CopyCat = function (options) {
+        this.options = options || {};
+
+        this.requests = {
+            getLeagues: {
+                url: "http://example.com/copy-cat-leagues",
+                done: "onGetLeaguesDone",
+                fail: "onGetLeaguesFail"
+            }
+        };
+
+        this.onGetLeaguesDone = sinon.spy();
+        this.onGetLeaguesFail = sinon.spy();
+    };
+
     _.extend(FantasyFootball.prototype, Requester);
+    _.extend(CopyCat.prototype, Requester);
 
     describe("Requester", function() {
 
@@ -193,6 +209,17 @@
                 expect(this.ff._requestsInitialized).to.be.true;
                 expect(this.ff._requests).not.to.be.empty;
                 expect(this.ff._requests.getLeagues).to.exist;
+            });
+
+            it("should reset internal requests upon initialization to prevent them from being overwritten", function () {
+                var copyCat = new CopyCat();
+
+                copyCat.execute(copyCat.requests.getLeagues).resolve();
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
+                copyCat.execute(copyCat.requests.getLeagues).resolve();
+
+                var args = this.ajaxStub.lastCall.args[0];
+                expect(args.url).to.equal(copyCat.requests.getLeagues.url);
             });
 
             it("should be able to execute a pre-defined request", function() {

@@ -24,6 +24,9 @@
             var self = this;
 
             if (!self._requestsInitialized) {
+                self._requests = {};
+                self._memoryCache = {};
+
                 if (self.requests) {
                     _.each(self.requests, function (requestData, requestName) {
                         var request = {};
