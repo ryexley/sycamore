@@ -296,6 +296,12 @@
                 expect(this._executeSpy.lastCall.args[1]).to.eql({});
             });
 
+            it("should use static data when optional second parameter for data is undefined", function () {
+                this.ff.execute(this.ff.requests.getPlayer, undefined).resolve();
+                var callData = this.ajaxStub.lastCall.args[0].data;
+                expect(callData.teamId).to.equal("12345");
+            });
+
             it("should remove any tokens used in the URL from request data", function () {
                 var _executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
                 var request = this.ff.requests.getMatchupStats;

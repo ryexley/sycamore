@@ -1,6 +1,6 @@
-// sycamore, v0.2.3 | (c) 2013 Bob Yexley
+// sycamore, v0.2.4 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-10-08 @ 11:52:09
+// Generated: 2013-10-11 @ 6:21:28
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -165,7 +165,7 @@
                 requestData = params.data;
             }
 
-            requestData = (arguments.length > 1) ? data : requestData;
+            requestData = data !== undefined ? data : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 var tokenizedUrl = _.template(params.url, requestData);
