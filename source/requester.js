@@ -159,7 +159,7 @@
                 requestData = params.data;
             }
 
-            requestData = (arguments.length > 1) ? data : requestData;
+            requestData = data !== undefined ? data : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 var tokenizedUrl = _.template(params.url, requestData);

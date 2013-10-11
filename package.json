@@ -1,6 +1,6 @@
 {
   "name": "sycamore",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options",
   "repository": {
     "type": "git",
