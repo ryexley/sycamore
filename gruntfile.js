@@ -28,9 +28,17 @@ module.exports = function (grunt) {
             options: {
                 banner: "<%= meta.banner %>\n"
             },
-            dist: {
+            requester: {
                 src: ["source/requester.js"],
                 dest: "dist/requester.js"
+            },
+            dataClient: {
+                src: ["source/dataClient.js"],
+                dest: "dist/dataClient.js"
+            },
+            all: {
+                src: ["source/requester.js", "source/dataClient.js"],
+                dest: "dist/sycamore.js"
             }
         },
 
@@ -49,7 +57,9 @@ module.exports = function (grunt) {
                     banner: "<%= meta.banner %>"
                 },
                 files: {
-                    "dist/requester.min.js": ["source/requester.js"]
+                    "dist/requester.min.js": ["source/requester.js"],
+                    "dist/dataClient.min.js": ["source/dataClient.js"],
+                    "dist/sycamore.min.js": ["source/requester.js", "source/dataClient.js"]
                 }
             }
         },
@@ -83,7 +93,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-bump");
 
     grunt.registerTask("default", ["jshint", "build", "test"]);
-    grunt.registerTask("build", ["concat", "uglify"]);
+    grunt.registerTask("build", ["concat:requester", "concat:dataClient", "concat:all", "uglify"]);
     grunt.registerTask("test", ["mocha"]);
     grunt.registerTask("release", ["bump-only", "build", "bump-commit"]);
 }

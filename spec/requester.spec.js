@@ -165,6 +165,13 @@
         this.onGetLeaguesFail = sinon.spy();
     };
 
+    var FantasyFootballClient = function (options) {
+        return new DataClient({
+            name: "example",
+            requests: options.requests
+        });
+    };
+
     _.extend(FantasyFootball.prototype, Requester);
     _.extend(CopyCat.prototype, Requester);
 
@@ -400,6 +407,38 @@
                 }, 50);
             });
 
+        });
+
+    });
+
+    describe("DataClient", function () {
+
+        beforeEach(function() {
+            this.ff = new FantasyFootball();
+            this.executeSpy = {};
+            this._executeSpy = {};
+            this.ajaxStub = sinon.stub($, "ajax", function() {
+                return $.Deferred();
+            });
+        });
+
+        afterEach(function() {
+            this.ff = null;
+            this.ajaxStub.restore();
+            localStorage.clear();
+
+            if (!_.isEmpty(this.executeSpy) && this.executeSpy.restore) {
+                this.executeSpy.restore();
+            }
+
+            if (!_.isEmpty(this._executeSpy) && this._executeSpy.restore) {
+                this._executeSpy.restore();
+            }
+        });
+
+        it("should support instantiation", function () {
+            var ffc = new FantasyFootballClient({ requests: this.ff.requests });
+            expect(ffc).to.exist;
         });
 
     });
