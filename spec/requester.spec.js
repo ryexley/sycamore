@@ -415,6 +415,7 @@
 
         beforeEach(function() {
             this.ff = new FantasyFootball();
+            this.ffc = new FantasyFootballClient({ requests: this.ff.requests });
             this.executeSpy = {};
             this._executeSpy = {};
             this.ajaxStub = sinon.stub($, "ajax", function() {
@@ -424,6 +425,7 @@
 
         afterEach(function() {
             this.ff = null;
+            this.ffc = null;
             this.ajaxStub.restore();
             localStorage.clear();
 
@@ -437,8 +439,16 @@
         });
 
         it("should support instantiation", function () {
-            var ffc = new FantasyFootballClient({ requests: this.ff.requests });
-            expect(ffc).to.exist;
+            expect(this.ffc).to.exist;
+        });
+
+        it("should have a method for each request defined on the object", function () {
+            var self = this;
+
+            _.each(self.ff.requests, function (value, key) {
+                expect(self.ffc[key]).to.exist;
+                expect(_.isFunction(self.ffc[key])).to.be.true;
+            });
         });
 
     });
