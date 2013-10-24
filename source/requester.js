@@ -14,35 +14,16 @@
 
     var Requester = {
 
-        _requestsInitialized: false,
-
-        _requests: {},
-
         _memoryCache: {},
 
-        _setupRequests: function () {
-            var self = this;
+        mapRequestData: function (request) {
+            var mappedRequest = {};
 
-            if (!self._requestsInitialized) {
-                self._requests = {};
-                self._memoryCache = {};
+            _.each(request, function (value, key) {
+                mappedRequest[key] = this._executeOptions[key](value, this);
+            }, this);
 
-                if (self.requests) {
-                    _.each(self.requests, function (requestData, requestName) {
-                        var request = {};
-                        _.each(requestData, function (value, key) {
-                            if (key !== "requestRefMap") {
-                                request[key] = self._executeOptions[key](value, self);
-                            }
-                        });
-
-                        self._requests[requestName] = request;
-                        self.requests[requestName].requestRefMap = { type: "_requests", name: requestName };
-                    });
-                }
-
-                self._requestsInitialized = true;
-            }
+            return mappedRequest;
         },
 
         /* jshint unused:false */
@@ -88,6 +69,10 @@
             },
 
             cache: function (target, context) {
+                return target;
+            },
+
+            buildRequest: function (target, context) {
                 return target;
             }
         },
@@ -147,11 +132,7 @@
                 }
             }
 
-            if (!self._requestsInitialized) {
-                self._setupRequests();
-            }
-
-            params = self[params.requestRefMap.type][params.requestRefMap.name];
+            params = this.mapRequestData(params);
 
             if (_.isFunction(params.data)) {
                 requestData = params.data.call(params.context || self);
@@ -159,7 +140,7 @@
                 requestData = params.data;
             }
 
-            requestData = data !== undefined ? data : requestData;
+            requestData = data !== undefined ? _.extend({}, requestData, data) : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 var tokenizedUrl = _.template(params.url, requestData);
@@ -182,17 +163,31 @@
             }
         },
 
+        buildRequest: function (params, data) {
+            if (params.buildRequest) {
+                return params.buildRequest.call(this, params, data);
+            } else {
+                return this._buildRequest(params, data);
+            }
+        },
+
+        _buildRequest: function (params, data) {
+            var request = {
+                url: params.url,
+                type: params.type || "get",
+                data: data || {},
+                dataType: params.dataType || "json",
+                contentType: params.contentType || "application/json; charset=utf-8",
+                context: params.context || this
+            };
+
+            return $.ajax(request);
+        },
+
         _execute: function (params, requestData) {
             var self = this;
 
-            var request = $.ajax({
-                url: params.url,
-                type: params.type || "get",
-                data: requestData || {},
-                dataType: params.dataType || "json",
-                contentType: params.contentType || "application/json; charset=utf-8",
-                context: params.context || self
-            });
+            var request = this.buildRequest(params, requestData);
 
             request.done(function (response) {
                 if (params.cache) {
@@ -211,14 +206,7 @@
             var delayProxy = $.Deferred();
 
             setTimeout(function () {
-                request = $.ajax({
-                    url: params.url,
-                    type: params.type || "get",
-                    data: requestData || {},
-                    dataType: params.dataType || "json",
-                    contentType: params.contentType || "application/json; charset=utf-8",
-                    context: params.context || self
-                })
+                request = self.buildRequest(params, requestData)
                 .done(function () {
                     delayProxy.resolve.apply(request, arguments);
                 })

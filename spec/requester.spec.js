@@ -200,17 +200,6 @@
 
         describe("execution", function() {
 
-            it("should initialize requests on first call to `execute`", function() {
-                expect(this.ff._requestsInitialized).to.be.false;
-                expect(this.ff._requests).to.be.empty;
-
-                this.ff.execute(this.ff.requests.getLeagues).resolve();
-
-                expect(this.ff._requestsInitialized).to.be.true;
-                expect(this.ff._requests).not.to.be.empty;
-                expect(this.ff._requests.getLeagues).to.exist;
-            });
-
             it("should reset internal requests upon initialization to prevent them from being overwritten", function () {
                 var copyCat = new CopyCat();
 
