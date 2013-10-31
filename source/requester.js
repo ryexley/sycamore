@@ -143,17 +143,26 @@
             requestData = data !== undefined ? _.extend({}, requestData, data) : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
-                var tokenizedUrl = _.template(params.url, requestData);
+                var unused = [];
 
                 if (!params.type || params.type.toLowerCase() === "get") {
                     var urlTokens = params.url.match(/{(.*?)}/g);
                     _.each(urlTokens, function (token) {
                         token = token.replace("{", "").replace("}", "");
-                        delete requestData[token];
+
+                        if (!(token in requestData)) {
+                            requestData[token] = "";
+                        }
+
+                        unused.push(token);
                     });
                 }
 
-                params.url = tokenizedUrl;
+                params.url = _.template(params.url, requestData);
+
+                _.each(unused, function (token) {
+                    delete requestData[token];
+                });
             }
 
             if (params.delayFor) {

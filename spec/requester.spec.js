@@ -120,6 +120,11 @@
                 data: { ownerId: 45678, name: "Lame fantasy league name" },
                 done: "onCreateLeagueDone",
                 fail: "onCreateLeagueFail"
+            },
+
+            getOpponentRecords: {
+                url: "http://example.com/{thisTokenShouldGetIgnored}",
+                done: "onGetOpponentRecordsDone"
             }
         };
 
@@ -148,6 +153,7 @@
         this.onGetMatchupDone = sinon.spy();
         this.onCreateLeagueDone = sinon.spy();
         this.onCreateLeagueFail = sinon.spy();
+        this.onGetOpponentRecordsDone = sinon.spy();
     };
 
     var CopyCat = function (options) {
@@ -299,6 +305,11 @@
 
                 expect(_executeSpy.lastCall.args[0].url).to.equal("http://example.com/league/12345/matchup/10017/stats")
                 expect(_executeSpy.lastCall.args[1]).to.eql({ sort: "desc" });
+            });
+
+            it("should ignore any tokens in the URL that aren't included in the data payload for the request", function () {
+                var request = this.ff.requests.getOpponentRecords;
+                this.ff.execute(request, { notIn: "tokenizedUrl" });
             });
 
         });
