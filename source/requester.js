@@ -20,7 +20,11 @@
             var mappedRequest = {};
 
             _.each(request, function (value, key) {
-                mappedRequest[key] = this._executeOptions[key](value, this);
+                if (this._executeOptions[key]) {
+                    mappedRequest[key] = this._executeOptions[key](value, this);
+                } else {
+                    mappedRequest[key] = value;
+                }
             }, this);
 
             return mappedRequest;
@@ -28,20 +32,12 @@
 
         /* jshint unused:false */
         _executeOptions: {
-            url: function (target, context) {
-                return target;
-            },
-
-            type: function (target, context) {
-                return target;
-            },
-
-            contentType: function (target, context) {
-                return target;
-            },
-
-            context: function (target, context) {
-                return target;
+            headers: function (target, context) {
+                if (context[target]) {
+                    return context[target];
+                } else {
+                    return target;
+                }
             },
 
             data: function (target, context) {
@@ -52,28 +48,12 @@
                 }
             },
 
-            dataType: function (target, context) {
-                return target;
-            },
-
             done: function (target, context) {
                 return context[target];
             },
 
             fail: function (target, context) {
                 return context[target];
-            },
-
-            delayFor: function (target, context) {
-                return target;
-            },
-
-            cache: function (target, context) {
-                return target;
-            },
-
-            buildRequest: function (target, context) {
-                return target;
             }
         },
         /* jshint unused:true */
@@ -110,6 +90,22 @@
             }
         },
 
+        _processHeaders: function (headers) {
+            var result = {};
+
+            if (!_.isEmpty(headers)) {
+                _.each(headers, function (headerValue, headerKey) {
+                    if (_.isFunction(headerValue)) {
+                        result[headerKey] = headerValue();
+                    } else {
+                        result[headerKey] = headerValue;
+                    }
+                });
+            }
+
+            return result;
+        },
+
         execute: function (params, data) {
             var self = this;
             var requestData;
@@ -133,6 +129,8 @@
             }
 
             params = this.mapRequestData(params);
+
+            params.processedHeaders = self._processHeaders(params.headers || {});
 
             if (_.isFunction(params.data)) {
                 requestData = params.data.call(params.context || self);
@@ -184,6 +182,7 @@
             var request = {
                 url: params.url,
                 type: params.type || "get",
+                headers: params.processedHeaders || {},
                 data: data || {},
                 dataType: params.dataType || "json",
                 contentType: params.contentType || "application/json; charset=utf-8",

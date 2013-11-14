@@ -35,7 +35,10 @@
             getLeagues: {
                 url: "http://example.com/leagues",
                 done: "onGetLeaguesDone",
-                fail: "onGetLeaguesFail"
+                fail: "onGetLeaguesFail",
+                headers: {
+                    testHeader: "foo"
+                }
             },
 
             getLeague: {
@@ -46,6 +49,11 @@
                     return {
                         id: 98765
                     };
+                },
+                headers: {
+                    testHeader: function () {
+                        return "bar";
+                    }
                 }
             },
 
@@ -310,6 +318,24 @@
             it("should ignore any tokens in the URL that aren't included in the data payload for the request", function () {
                 var request = this.ff.requests.getOpponentRecords;
                 this.ff.execute(request, { notIn: "tokenizedUrl" });
+            });
+
+            it("should accept an object literal for custom headers for the request", function () {
+                this.ff.execute(this.ff.requests.getLeagues).resolve();
+                var args = this.ajaxStub.lastCall.args[0];
+
+                expect(args.headers).to.exist;
+                expect(_.isEmpty(args.headers)).to.be.false;
+                expect(args.headers.testHeader).to.equal("foo");
+            });
+
+            it("should accept an object with a custom function to resolve a header value", function () {
+                this.ff.execute(this.ff.requests.getLeague).resolve();
+                var args = this.ajaxStub.lastCall.args[0];
+
+                expect(args.headers).to.exist;
+                expect(_.isEmpty(args.headers)).to.be.false;
+                expect(args.headers.testHeader).to.equal("bar");
             });
 
         });
