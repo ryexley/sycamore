@@ -78,7 +78,7 @@
                 this._memoryCache[cache.key] = data;
             }
 
-            cache.expires = this.dates.addMinutes(Date.now(), cache.expiresAfter);
+            cache.expires = this.dates.addMinutes(+new Date(), cache.expiresAfter);
         },
 
         _getCachedData: function (cache) {
@@ -113,7 +113,7 @@
             if (params.cache) {
                 var expired = true;
                 if (params.cache.expires) {
-                    if (this.dates.compare(Date.now(), params.cache.expires) < 0) {
+                    if (this.dates.compare(+new Date(), params.cache.expires) < 0) {
                         expired = false;
                     }
                 }

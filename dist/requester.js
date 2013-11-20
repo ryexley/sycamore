@@ -1,6 +1,6 @@
-// sycamore, v0.3.1 | (c) 2013 Bob Yexley
+// sycamore, v0.3.2 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-11-14 @ 11:36:01
+// Generated: 2013-11-20 @ 2:35:33
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -84,7 +84,7 @@
                 this._memoryCache[cache.key] = data;
             }
 
-            cache.expires = this.dates.addMinutes(Date.now(), cache.expiresAfter);
+            cache.expires = this.dates.addMinutes(+new Date(), cache.expiresAfter);
         },
 
         _getCachedData: function (cache) {
@@ -119,7 +119,7 @@
             if (params.cache) {
                 var expired = true;
                 if (params.cache.expires) {
-                    if (this.dates.compare(Date.now(), params.cache.expires) < 0) {
+                    if (this.dates.compare(+new Date(), params.cache.expires) < 0) {
                         expired = false;
                     }
                 }
