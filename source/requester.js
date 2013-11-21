@@ -181,9 +181,10 @@
         _buildRequest: function (params, data) {
             var type = params.type && params.type.toLowerCase(),
                 putOrPost = (type === "put" || type === "post"),
-                contentTypeJson = (!params.contentType || params.contentType.indexOf("json") > -1);
+                contentTypeJson = (!params.contentType || params.contentType.indexOf("json") > -1),
+                dataIsStringified = (typeof(data) === "string");
 
-            if (data && putOrPost && contentTypeJson) {
+            if (data && !dataIsStringified && putOrPost && contentTypeJson) {
                 data = JSON.stringify(data || {});
             }
 
