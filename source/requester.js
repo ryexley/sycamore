@@ -179,11 +179,19 @@
         },
 
         _buildRequest: function (params, data) {
+            var type = params.type && params.type.toLowerCase(),
+                putOrPost = (type === "put" || type === "post"),
+                contentTypeJson = (!params.contentType || params.contentType.indexOf("json") > -1);
+
+            if (data && putOrPost && contentTypeJson) {
+                data = JSON.stringify(data || {});
+            }
+
             var request = {
                 url: params.url,
                 type: params.type || "get",
                 headers: params.processedHeaders || {},
-                data: data || {},
+                data: data,
                 dataType: params.dataType || "json",
                 contentType: params.contentType || "application/json; charset=utf-8",
                 context: params.context || this

@@ -1,6 +1,6 @@
-// sycamore, v0.3.2 | (c) 2013 Bob Yexley
+// sycamore, v0.3.3 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-11-20 @ 2:35:33
+// Generated: 2013-11-20 @ 9:05:15
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -185,11 +185,19 @@
         },
 
         _buildRequest: function (params, data) {
+            var type = params.type && params.type.toLowerCase(),
+                putOrPost = (type === "put" || type === "post"),
+                contentTypeJson = (!params.contentType || params.contentType.indexOf("json") > -1);
+
+            if (data && putOrPost && contentTypeJson) {
+                data = JSON.stringify(data || {});
+            }
+
             var request = {
                 url: params.url,
                 type: params.type || "get",
                 headers: params.processedHeaders || {},
-                data: data || {},
+                data: data,
                 dataType: params.dataType || "json",
                 contentType: params.contentType || "application/json; charset=utf-8",
                 context: params.context || this

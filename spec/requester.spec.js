@@ -231,13 +231,18 @@
             });
 
             it("should execute pre-defined requests with the correct options", function () {
+                var args;
+
                 this.ff.execute(this.ff.requests.getLeagues).resolve();
-                expect(this.ajaxStub.lastCall.args[0].type).to.equal("get");
-                expect(this.ajaxStub.lastCall.args[0].url).to.equal("http://example.com/leagues");
+                args = this.ajaxStub.lastCall.args[0];
+                expect(args.type).to.equal("get");
+                expect(args.url).to.equal("http://example.com/leagues");
 
                 this.ff.execute(this.ff.requests.createLeague).resolve();
-                expect(this.ajaxStub.lastCall.args[0].type).to.equal("post");
-                expect(this.ajaxStub.lastCall.args[0].data.ownerId).to.equal(45678);
+                args = this.ajaxStub.lastCall.args[0];
+                expect(args.type).to.equal("post");
+                expect(args.data).to.be.a("string");
+                expect(JSON.parse(args.data).ownerId).to.equal(45678);
                 expect(this.ff.onCreateLeagueDone.called).to.be.true;
             });
 
