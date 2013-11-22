@@ -16,6 +16,15 @@
 
         _memoryCache: {},
 
+        requestDefaults: {
+            preserveUrlTokensInPayload: {
+                get: false,
+                put: true,
+                post: true,
+                "delete": false
+            }
+        },
+
         mapRequestData: function (request) {
             var mappedRequest = {};
 
@@ -143,7 +152,9 @@
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 var unused = [];
 
-                if (!params.type || params.type.toLowerCase() === "get") {
+                // if (!params.type || params.type.toLowerCase() === "get") {
+                params.type = params.type || "get";
+                if (!this.requestDefaults.preserveUrlTokensInPayload[params.type.toLowerCase()]) {
                     var urlTokens = params.url.match(/{(.*?)}/g);
                     _.each(urlTokens, function (token) {
                         token = token.replace("{", "").replace("}", "");

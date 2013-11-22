@@ -1,6 +1,6 @@
-// sycamore, v0.3.3 | (c) 2013 Bob Yexley
+// sycamore, v0.3.4 | (c) 2013 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2013-11-21 @ 10:43:24
+// Generated: 2013-11-22 @ 10:13:54
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -21,6 +21,15 @@
     var Requester = {
 
         _memoryCache: {},
+
+        requestDefaults: {
+            preserveUrlTokensInPayload: {
+                get: false,
+                put: true,
+                post: true,
+                "delete": false
+            }
+        },
 
         mapRequestData: function (request) {
             var mappedRequest = {};
@@ -149,7 +158,9 @@
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
                 var unused = [];
 
-                if (!params.type || params.type.toLowerCase() === "get") {
+                // if (!params.type || params.type.toLowerCase() === "get") {
+                params.type = params.type || "get";
+                if (!this.requestDefaults.preserveUrlTokensInPayload[params.type.toLowerCase()]) {
                     var urlTokens = params.url.match(/{(.*?)}/g);
                     _.each(urlTokens, function (token) {
                         token = token.replace("{", "").replace("}", "");
