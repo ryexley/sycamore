@@ -209,6 +209,10 @@
                 context: params.context || this
             };
 
+            if (request.type.toLowerCase() === "get" && params.nocache) {
+                request.cache = !params.nocache;
+            }
+
             return $.ajax(request);
         },
 

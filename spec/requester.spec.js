@@ -112,7 +112,8 @@
                 cache: {
                     expiresAfter: 2,
                     key: "matchup"
-                }
+                },
+                nocache: true
             },
 
             getMatchupStats: {
@@ -435,6 +436,37 @@
                     expect(self.ff._memoryCache[request.cache.key]).to.eql(response);
                     done();
                 }, 50);
+            });
+
+            it("should not set the cache parameter when `nocache` is not specified on the request", function () {
+                var self = this;
+                var request = this.ff.requests.getPlayerRecord;
+                var response = {
+                    playerId: 23456,
+                    record: {
+                        wins: 4,
+                        losses: 1
+                    }
+                };
+
+                this.ff.execute(request).resolve(response);
+                var args = this.ajaxStub.lastCall.args[0];
+
+                expect(args.cache).to.not.exist;
+            });
+
+            it("should set the cache parameter when `nocache` is set on the request", function () {
+                var self = this;
+                var request = this.ff.requests.getMatchup;
+                var response = {
+                    foo: "bar"
+                };
+
+                this.ff.execute(request).resolve(response);
+                var args = this.ajaxStub.lastCall.args[0];
+
+                expect(args.cache).to.exist;
+                expect(args.cache).to.be.false;
             });
 
         });
