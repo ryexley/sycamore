@@ -150,7 +150,15 @@
             requestData = data !== undefined ? _.extend({}, requestData, data) : requestData;
 
             if ((params.url.indexOf("{") && params.url.indexOf("}")) && (!_.isEmpty(requestData))) {
-                var unused = [];
+                var unused = [],
+                    encodedData = _.clone(requestData);
+
+                // ensure that pieces used in URL are properly encoded
+                _.each(encodedData, function (value, key) {
+                    if (typeof value === "string") {
+                        encodedData[key] = encodeURIComponent(value);
+                    }
+                });
 
                 // if (!params.type || params.type.toLowerCase() === "get") {
                 params.type = params.type || "get";
@@ -160,14 +168,14 @@
                         token = token.replace("{", "").replace("}", "");
 
                         if (!(token in requestData)) {
-                            requestData[token] = "";
+                            encodedData[token] = "";
                         }
 
                         unused.push(token);
                     });
                 }
 
-                params.url = _.template(params.url, requestData);
+                params.url = _.template(params.url, encodedData);
 
                 _.each(unused, function (token) {
                     delete requestData[token];

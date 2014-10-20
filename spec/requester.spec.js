@@ -295,6 +295,18 @@
                 expect(args.url).to.equal("http://example.com/leagues/98765");
             });
 
+            it("should transform tokenized URLs using request data", function () {
+                var request = this.ff.requests.getLeague;
+                var response = {
+                    name: "Our super awesome 'murican fantasy football league",
+                    players: ["Joe Bob", "Billy Joe", "Cloyd Rivers"]
+                };
+
+                this.ff.execute(request, { id: "one / two & three ? four"}).resolve(response);
+                var args = this.ajaxStub.lastCall.args[0];
+                expect(args.url).to.equal("http://example.com/leagues/one%20%2F%20two%20%26%20three%20%3F%20four");
+            });
+
             it("should accept an optional second parameter for the data to execute with", function () {
                 this.executeSpy = sinon.spy(FantasyFootball.prototype, "execute");
                 this._executeSpy = sinon.spy(FantasyFootball.prototype, "_execute");
