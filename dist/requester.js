@@ -1,6 +1,6 @@
-// sycamore, v0.3.8 | (c) 2015 Bob Yexley
+// sycamore, v0.4.0 | (c) 2015 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2015-06-29 @ 12:47:23
+// Generated: 2015-06-29 @ 2:45:20
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -182,6 +182,10 @@
                 }
 
                 params.url = _.template(params.url, encodedData);
+
+                if (typeof params.url === "function") {
+                    params.url = _.template(params.url)(encodedData);
+                }
 
                 _.each(unused, function (token) {
                     delete requestData[token];

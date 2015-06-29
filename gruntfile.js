@@ -56,7 +56,7 @@ module.exports = function (grunt) {
 
         watch: {
             scripts: {
-                files: ["source/*.js", "spec/*.js"],
+                files: ["source/*.js", "spec/*.js", "package.json", "bower.json"],
                 tasks: ["default"],
                 options: {
                     nospawn: true
@@ -68,7 +68,7 @@ module.exports = function (grunt) {
             options: {
                 files: ["package.json", "bower.json"],
                 updateConfigs: ["pkg"],
-                commitFiles: ["-a"],
+                commit: false,
                 push: false
             }
         }

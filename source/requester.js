@@ -177,6 +177,10 @@
 
                 params.url = _.template(params.url, encodedData);
 
+                if (typeof params.url === "function") {
+                    params.url = _.template(params.url)(encodedData);
+                }
+
                 _.each(unused, function (token) {
                     delete requestData[token];
                 });
