@@ -8,10 +8,6 @@
     }
 }(this, function ($, _) {
 
-    _.templateSettings = {
-        interpolate: /\{(.+?)\}/g
-    };
-
     var Requester = {
 
         _memoryCache: {},
@@ -175,11 +171,17 @@
                     });
                 }
 
-                params.url = _.template(params.url, encodedData);
+                var _templateSettings = _.templateSettings;
 
-                if (typeof params.url === "function") {
+                if (_.name === "lodash") {
+                    _.templateSettings.interpolate = /\{(.+?)\}/g;
                     params.url = _.template(params.url)(encodedData);
+                } else {
+                    _.templateSettings = { interpolate: /\{(.+?)\}/g };
+                    params.url = _.template(params.url, encodedData);
                 }
+
+                _.templateSettings = _templateSettings;
 
                 _.each(unused, function (token) {
                     delete requestData[token];

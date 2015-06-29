@@ -1,6 +1,6 @@
-// sycamore, v0.4.0 | (c) 2015 Bob Yexley
+// sycamore, v0.4.1 | (c) 2015 Bob Yexley
 // Description: A mixin with functionality to wrap jQuery $.ajax calls, and simplify the definition and consumption of $.ajax request options 
-// Generated: 2015-06-29 @ 2:45:20
+// Generated: 2015-06-29 @ 3:11:48
 // https://github.com/ryexley/sycamore
 // License: http://www.opensource.org/licenses/mit-license
 
@@ -13,10 +13,6 @@
         root.Requester = factory(root.$, root._);
     }
 }(this, function ($, _) {
-
-    _.templateSettings = {
-        interpolate: /\{(.+?)\}/g
-    };
 
     var Requester = {
 
@@ -181,11 +177,17 @@
                     });
                 }
 
-                params.url = _.template(params.url, encodedData);
+                var _templateSettings = _.templateSettings;
 
-                if (typeof params.url === "function") {
+                if (_.name === "lodash") {
+                    _.templateSettings.interpolate = /\{(.+?)\}/g;
                     params.url = _.template(params.url)(encodedData);
+                } else {
+                    _.templateSettings = { interpolate: /\{(.+?)\}/g };
+                    params.url = _.template(params.url, encodedData);
                 }
+
+                _.templateSettings = _templateSettings;
 
                 _.each(unused, function (token) {
                     delete requestData[token];
