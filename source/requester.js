@@ -171,7 +171,7 @@
                     });
                 }
 
-                var _templateSettings = _.templateSettings;
+                var _templateSettings = _.clone(_.templateSettings);
 
                 if (_.name === "lodash") {
                     _.templateSettings.interpolate = /\{(.+?)\}/g;
