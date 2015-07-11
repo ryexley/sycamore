@@ -356,6 +356,23 @@
                 expect(args.headers.testHeader).to.equal("bar");
             });
 
+            it("should support a configurable URL token format", function () {
+                var url = ""
+
+                url = this.ff._template("/foo/{one}/bar/{two}", { one: 123, two: 456 });
+                expect(url).to.equal("/foo/123/bar/456");
+
+                this.ff.defaults.templateSettings = { interpolate: /\${([\s\S]+?)}/g };
+
+                url = this.ff._template("/foo/${one}/bar/${two}", { one: 789, two: "000" });
+                expect(url).to.equal("/foo/789/bar/000");
+
+                this.ff.defaults.templateSettings = { interpolate: /<%=([\s\S]+?)%>/g };
+
+                url = this.ff._template("/foo/<%= one %>/bar/<%= two %>", { one: "1", two: "2" });
+                expect(url).to.equal("/foo/1/bar/2");
+            });
+
         });
 
         describe("caching", function () {
